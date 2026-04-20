@@ -45,7 +45,6 @@ public class AuthService {
                 .principalName(authentication.getName())
                 .authorizationGrantType(new AuthorizationGrantType("custom_password"))
                 .attribute(Principal.class.getName(), authentication)
-                // Quan trọng: lưu authorized scopes vào attribute (tránh NPE khi refresh)
                 .authorizedScopes(registeredClient.getScopes());
 
         OAuth2TokenContext accessTokenContext = DefaultOAuth2TokenContext.builder()
