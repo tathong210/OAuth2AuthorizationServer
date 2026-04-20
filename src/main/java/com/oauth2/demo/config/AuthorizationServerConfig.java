@@ -14,7 +14,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
@@ -57,21 +56,21 @@ public class AuthorizationServerConfig {
                                                                       AuthenticationManager authenticationManager) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer();
-
+// DÒNG QUAN TRỌNG NHẤT: Chỉ cho phép Chain này xử lý các endpoint của Auth Server
+        http.requestMatcher(authorizationServerConfigurer.getEndpointsMatcher());
         authorizationServerConfigurer.tokenEndpoint(tokenEndpoint ->
                 tokenEndpoint
                         .accessTokenRequestConverter(new CustomAuthenticationConverter())
                         .authenticationProvider(new CustomAuthenticationProvider(authorizationService, tokenGenerator, authenticationManager))
         );
+        http.apply(authorizationServerConfigurer);
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("http://localhost:4200/login")) // Redirect sang Angular
                 );
-
-        http.apply(authorizationServerConfigurer);
-        return http.formLogin(Customizer.withDefaults()).build();
+        return http.build();
     }
 
     // 3. Khai báo User đăng nhập (Nên thay bằng Database trong thực tế)

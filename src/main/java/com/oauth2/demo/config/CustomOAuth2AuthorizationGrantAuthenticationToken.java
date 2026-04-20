@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Getter
 public class CustomOAuth2AuthorizationGrantAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
- 
+
     private final String username;
     private final String password;
 
